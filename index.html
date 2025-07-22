@@ -1,17 +1,164 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Pong Game</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Пинг-Понг</title>
+    <style>
+        body {
+            background: #222;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .menu {
+            margin-top: 100px;
+        }
+        .menu button {
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            padding: 15px;
+            font-size: 18px;
+            border: none;
+            border-radius: 8px;
+            background: #444;
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .menu button:hover {
+            background: #666;
+        }
+          .news-box {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            background: #333;
+            color: #fff;
+            padding: 18px 24px;
+            border-radius: 10px;
+            box-shadow: 0 2px 12px #0008;
+            font-size: 16px;
+            text-align: left;
+            min-width: 220px;
+            z-index: 1000;
+        }   
+    </style>
 </head>
 <body>
-    <div id="gameContainer">
-        <canvas id="pongCanvas" width="800" height="500"></canvas>
-        <div id="scoreBoard">
-            <span id="leftScore">0</span> : <span id="rightScore">0</span>
-        </div>
+    <canvas id="bg-canvas" width="900" height="600" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:-1;"></canvas>
+    <div class="menu">
+        <h1>Пинг-Понг</h1>
+        <button onclick="startGame()">Начать игру</button>
+        <button onclick="showRules()">Правила</button>
+        <button onclick="exitGame()">Выход</button>
     </div>
-    <script src="game.js"></script>
+  
+        <script>
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+    let ball = { x: 450, y: 300, vx: 3, vy: 2, r: 14, color: '#ff5e00' };
+
+
+    const paddle = {
+        w: 16,
+        h: 90,
+        color: '#0ff',
+        left: { x: 50, y: 255, vy: 2 },
+        right: { x: 834, y: 255, vy: -2 }
+    };
+
+    function drawBackground() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+
+        ctx.globalAlpha = 0.7;
+        ctx.fillStyle = '#222';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+
+        ctx.strokeStyle = '#555';
+        ctx.lineWidth = 2;
+        for (let y = 0; y < canvas.height; y += 40) {
+            ctx.beginPath();
+            ctx.moveTo(canvas.width / 2, y);
+            ctx.lineTo(canvas.width / 2, y + 20);
+            ctx.stroke();
+        }
+
+        ctx.strokeStyle = '#888';
+        ctx.lineWidth = 4;
+        ctx.strokeRect(30, 30, canvas.width - 60, canvas.height - 60);
+
+        ctx.globalAlpha = 1.0;
+    }
+
+    function drawPaddles() {
+
+        ctx.save();
+        ctx.globalAlpha = 0.85;
+        ctx.fillStyle = paddle.color;
+        ctx.fillRect(paddle.left.x, paddle.left.y, paddle.w, paddle.h);
+
+
+        ctx.fillRect(paddle.right.x, paddle.right.y, paddle.w, paddle.h);
+        ctx.restore();
+    }
+
+    function drawBall() {
+        ctx.save();
+        ctx.globalAlpha = 0.92;
+        ctx.beginPath();
+        ctx.ellipse(ball.x, ball.y, ball.r, ball.r * 0.85, 0, 0, Math.PI * 2);
+        ctx.fillStyle = ball.color;
+        ctx.shadowColor = '#fff200';
+        ctx.shadowBlur = 18;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        ctx.restore();
+    }
+
+    function animate() {
+        drawBackground();
+
+   
+        ball.x += ball.vx;
+        ball.y += ball.vy;
+
+
+        paddle.left.y += paddle.left.vy;
+        paddle.right.y += paddle.right.vy;
+
+
+        if (paddle.left.y < 30 || paddle.left.y + paddle.h > canvas.height - 30) paddle.left.vy *= -1;
+        if (paddle.right.y < 30 || paddle.right.y + paddle.h > canvas.height - 30) paddle.right.vy *= -1;
+
+        if (ball.y - ball.r < 30 || ball.y + ball.r > canvas.height - 30) ball.vy *= -1;
+        if (ball.x - ball.r < 30 || ball.x + ball.r > canvas.width - 30) ball.vx *= -1;
+
+        drawPaddles();
+        drawBall();
+        requestAnimationFrame(animate);
+    }
+
+    animate();
+    </script>
+    <script>
+        function startGame() {
+            window.location.href = 'game.html';
+            alert('Игра начинается!');
+        }
+        function showRules() {
+            alert('Управление: W/S и стрелки вверх/вниз.\nЗабей мяч в ворота соперника!');
+        }
+        function exitGame() {
+            window.close(); 
+            
+        }
+    </script>
+     <div class="news-box">
+        <strong>Новости:</strong><br>
+        0.2 - добавлено меню<br>
+        Следите за обновлениями!
 </body>
 </html>

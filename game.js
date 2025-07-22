@@ -14,7 +14,6 @@ let rightPaddleY = HEIGHT / 2 - PADDLE_HEIGHT / 2;
 let leftScore = 0;
 let rightScore = 0;
 
-// Ball properties
 let ballX = WIDTH / 2 - BALL_SIZE / 2;
 let ballY = HEIGHT / 2 - BALL_SIZE / 2;
 let ballSpeedX = 5 * (Math.random() > 0.5 ? 1 : -1);
@@ -27,16 +26,16 @@ function resetBall() {
     ballSpeedY = (Math.random() * 4 - 2);
 }
 
-// Mouse controls for left paddle
+
 canvas.addEventListener('mousemove', function(e) {
     const rect = canvas.getBoundingClientRect();
     const mouseY = e.clientY - rect.top;
     leftPaddleY = mouseY - PADDLE_HEIGHT / 2;
-    // Clamp paddle within canvas
+
     leftPaddleY = Math.max(0, Math.min(HEIGHT - PADDLE_HEIGHT, leftPaddleY));
 });
 
-// Basic AI for right paddle
+
 function updateRightPaddle() {
     const paddleCenter = rightPaddleY + PADDLE_HEIGHT / 2;
     if (ballY + BALL_SIZE / 2 < paddleCenter - 20) {
@@ -44,7 +43,6 @@ function updateRightPaddle() {
     } else if (ballY + BALL_SIZE / 2 > paddleCenter + 20) {
         rightPaddleY += 5;
     }
-    // Clamp paddle within canvas
     rightPaddleY = Math.max(0, Math.min(HEIGHT - PADDLE_HEIGHT, rightPaddleY));
 }
 
@@ -73,13 +71,13 @@ function drawNet() {
 }
 
 function draw() {
-    // Clear
+    
     drawRect(0, 0, WIDTH, HEIGHT, "#111");
     drawNet();
-    // Paddles
+
     drawRect(PADDLE_GAP, leftPaddleY, PADDLE_WIDTH, PADDLE_HEIGHT, "#0f0");
     drawRect(WIDTH - PADDLE_WIDTH - PADDLE_GAP, rightPaddleY, PADDLE_WIDTH, PADDLE_HEIGHT, "#f00");
-    // Ball
+
     drawCircle(ballX + BALL_SIZE / 2, ballY + BALL_SIZE / 2, BALL_SIZE / 2, "#fff");
 }
 
@@ -87,7 +85,6 @@ function updateBall() {
     ballX += ballSpeedX;
     ballY += ballSpeedY;
 
-    // Top/bottom wall collision
     if(ballY <= 0) {
         ballY = 0;
         ballSpeedY = -ballSpeedY;
@@ -97,19 +94,17 @@ function updateBall() {
         ballSpeedY = -ballSpeedY;
     }
 
-    // Left paddle collision
     if(ballX <= PADDLE_GAP + PADDLE_WIDTH &&
         ballY + BALL_SIZE > leftPaddleY &&
         ballY < leftPaddleY + PADDLE_HEIGHT &&
         ballX >= PADDLE_GAP) {
         ballX = PADDLE_GAP + PADDLE_WIDTH;
         ballSpeedX = -ballSpeedX;
-        // Add spin based on paddle movement
         let hitPoint = (ballY + BALL_SIZE / 2) - (leftPaddleY + PADDLE_HEIGHT / 2);
         ballSpeedY += hitPoint * 0.07;
     }
 
-    // Right paddle collision
+
     if(ballX + BALL_SIZE >= WIDTH - PADDLE_GAP - PADDLE_WIDTH &&
         ballY + BALL_SIZE > rightPaddleY &&
         ballY < rightPaddleY + PADDLE_HEIGHT &&
@@ -120,13 +115,12 @@ function updateBall() {
         ballSpeedY += hitPoint * 0.07;
     }
 
-    // Score: left missed
+
     if(ballX < 0) {
         rightScore++;
         document.getElementById('rightScore').textContent = rightScore;
         resetBall();
     }
-    // Score: right missed
     if(ballX > WIDTH) {
         leftScore++;
         document.getElementById('leftScore').textContent = leftScore;
